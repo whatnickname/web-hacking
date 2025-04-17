@@ -41,9 +41,9 @@ def signup():
         password = request.form.get('password')
         passwordCon = request.form.get('passwordCon')
         user_id = request.form.get('user_id')  # HTML에서 받은 user_id
-        user_nickname = request.form.get('user_nickname')
+        nickname = request.form.get('nickname')
 
-        if email is None or password is None or passwordCon is None or user_id is None or user_nickname is None:
+        if email is None or password is None or passwordCon is None or user_id is None or nickname is None:
             flash('모든 필드를 입력해 주세요.', category='error')
             return redirect(url_for('auth.signup'))
 
@@ -64,10 +64,10 @@ def signup():
             flash('Password must be at least 7 characters', category='error')
         elif len(user_id) < 2:
             flash('ID must be at least 2 characters', category='error')
-        elif len(user_nickname) < 2:
+        elif len(nickname) < 2:
             flash('Nickname must be at least 2 characters', category='error')
         else:
-            new_user = User(nickname=user_nickname, email=email, id=user_id, password=generate_password_hash(password, method='pbkdf2:sha256'))  # user_id를 id로 수정
+            new_user = User(nickname=nickname, email=email, id=user_id, password=generate_password_hash(password, method='pbkdf2:sha256'))  # user_id를 id로 수정
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
