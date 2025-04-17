@@ -9,7 +9,7 @@
     {% if length != 0 %}
         {% for board in board_list %}
             <a href="{{ url_for('views.board_info', index=loop.index0) }}">
-                <h2>{{ board[0] }} : {{ board[1] }}</h2>
+                <h2>{{ board[2] }} : {{ board[0] }}</h2>
             </a>
         {% endfor %}
     {% else %}
