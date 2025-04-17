@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>게시글 수정</title>
+</head>
+<body>
+  <h1>게시글 수정</h1>
+  <form method="POST" enctype="multipart/form-data">
+    <p>제목: <input type="text" name="title" value="{{ post['title'] }}"></p>
+    <p>내용: <textarea name="content">{{ post['content'] }}</textarea></p>
+    
+    <p>이미지 수정: <input type="file" name="file"></p>
+
+    <button type="submit">수정 완료</button>
+  </form>
+
+  <br>
+  <a href="{{ url_for('views.board_info', index=index) }}">🔙 돌아가기</a>
+
+  {% if check %}
+    <p>현재 이미지:</p>
+    <img src="{{ url_for('static', filename=index|string + '.jpeg') }}" width="300"><br>
+    <a href="{{ url_for('views.delete_image', index=index) }}">🗑 이미지 삭제</a><br>
+  {% else %}
+    <p>등록된 이미지가 없습니다.</p>
+  {% endif %}
+</body>
+</html>

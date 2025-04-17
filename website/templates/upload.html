@@ -1,0 +1,13 @@
+
+{% extends "base.html" %}
+{% block title %}upload{% endblock %}
+
+{% block content %}
+<form method="get", action="/apply_photo">
+    <input placeholder="제목을 입력하세요" required name="title">
+    <br>
+    <textarea name="content" placeholder="내용 입력하세요" cols="45" rows="4" required></textarea>
+    <br>
+    <button>다음</button>
+</form>
+{% endblock %}

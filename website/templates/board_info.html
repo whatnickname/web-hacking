@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>작성자:{{writer}}</p>
+    <p><h1>제목 : {{title}}</h1></p>
+    <p>내용 : {{content}}</p>
+
+    {%if check%}
+    <div>
+        <img src= {{photo}} width="450" height="450">
+    </div>
+    {%endif%}
+
+    <h2>💬 댓글</h2>
+    <form method="POST">
+        <textarea name="content" placeholder="댓글 내용" required></textarea><br>
+        <button type="submit">댓글 작성</button>
+    </form>
+
+    <ul>
+        {% for comment in comments %}
+            <li><strong>{{ comment.author }}</strong>: {{ comment.content }} </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('views.main') }}">🏠 홈으로</a>
+
+    {% if nickname==writer %}
+    <a href="{{ url_for('views.edit_post', index=index) }}">✏️ 수정</a>
+    <a href="{{ url_for('views.delete_post', index=index) }}">🗑 삭제</a>
+    {%endif%}
+
+
+</body>
+</html>

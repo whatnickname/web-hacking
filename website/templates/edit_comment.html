@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>댓글 수정</title>
+</head>
+<body>
+    <h1>✏️ 댓글 수정</h1>
+    <form method="post">
+        이름 확인: <input type="text" name="author"><br>
+        새 댓글 내용: <input type="text" name="content"><br>
+        <button type="submit">수정 완료</button>
+    </form>
+    <br>
+    <a href="{{ url_for('home') }}">← 홈으로</a>
+</body>
+</html>

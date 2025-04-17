@@ -1,0 +1,23 @@
+{% extends "home.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <h1 align="center">로그인</h1>
+
+    <div>
+        <label for="user_id">ID</label>  <!-- 'id'에서 'user_id'로 변경 -->
+        <input type="text" class="form-control" id="user_id" name="user_id" placeholder="Enter ID">  <!-- type을 'text'로 수정 -->
+    </div>
+
+    <div>
+        <label for="password">password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+    </div>
+    
+    <br><br>
+
+    <button type="submit">Login</button>
+
+</form>
+{% endblock %}

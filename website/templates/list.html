@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if length != 0 %}
+        {% for board in board_list %}
+            <a href="{{ url_for('views.board_info', index=loop.index0) }}">
+                <h2>{{ board[0] }} : {{ board[1] }}</h2>
+            </a>
+        {% endfor %}
+    {% else %}
+        <h2>게시물을 등록해주세요</h2>
+    {% endif %}
+</body>
+</html>

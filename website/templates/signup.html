@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Signup{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <h1 align="center">회원가입</h1>
+
+
+    <div>
+        <label for="user_id">ID</label>  <!-- 'id'에서 'user_id'로 변경 -->
+        <input type="text" class="form-control" id="user_id" name="user_id" placeholder="Enter ID">  <!-- type을 'text'로 수정 -->
+    </div>
+
+    <div>
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+    </div>
+
+    <div>
+        <label for="passwordCon">Confirm Password</label>
+        <input type="password" class="form-control" id="passwordCon" name="passwordCon" placeholder="Confirm password">
+    </div>
+
+    <div>
+        <label for="email">Email Address</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">  <!-- 'email'로 수정 -->
+    </div>
+
+    <div>
+        <label for="nickname">Nickname</label>  <!-- 라벨 수정 -->
+        <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Enter nickname">  <!-- type을 'text'로 수정 -->
+    </div>
+
+    <br><br>
+
+    <button type="submit">Submit</button>
+
+</form>
+{% endblock %}
