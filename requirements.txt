@@ -4,3 +4,4 @@ pandas
 flask_sqlalchemy
 flask_login
 openpyxl
+psycopg2-binary
