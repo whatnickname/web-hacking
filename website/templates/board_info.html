@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
-    <p>작성자:{{writer}}</p>
-    <p><h1>제목 : {{title}}</h1></p>
-    <p>내용 : {{content}}</p>
 
-    {%if check%}
+<body>
+    <p>작성자:{{writer|safe}}</p>
+    <p>
+    <h1>제목 : {{title|safe}}</h1>
+    </p>
+    <p>내용 : {{content|safe}}</p>
+
+    {% if check %}
     <div>
-        <img src= {{photo}} width="450" height="450">
+        <iframe src="{{ url_for('views.download_image', index=index) }}" width="450" height="450"
+            frameborder="0"></iframe>
     </div>
-    {%endif%}
+    {% endif %}
+
 
     <h2>💬 댓글</h2>
     <form method="POST">
@@ -24,7 +30,7 @@
 
     <ul>
         {% for comment in comments %}
-            <li><strong>{{ comment.author }}</strong>: {{ comment.content }} </li>
+        <li><strong>{{ comment.author|safe }}</strong>: {{ comment.content|safe }} </li>
         {% endfor %}
     </ul>
 
@@ -37,4 +43,5 @@
 
 
 </body>
+
 </html>

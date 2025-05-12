@@ -3,3 +3,4 @@ gunicorn
 pandas
 flask_sqlalchemy
 flask_login
+openpyxl

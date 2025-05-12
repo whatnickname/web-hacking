@@ -1,0 +1,12 @@
+<h1>검색 결과</h1>
+<p>검색어: "{{ query|safe }}"</p>
+
+{% if length > 0 %}
+  {% for board in result_list %}
+    <a href="{{ url_for('views.board_info', index=board[0]) }}">
+      <h3>{{ board[3]|safe   }} : {{ board[1]|safe }}</h3>
+    </a>
+  {% endfor %}
+{% else %}
+  <p>검색 결과가 없습니다.</p>
+{% endif %}

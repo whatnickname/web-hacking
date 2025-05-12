@@ -8,7 +8,7 @@
   <h1>게시글 수정</h1>
   <form method="POST" enctype="multipart/form-data">
     <p>제목: <input type="text" name="title" value="{{ post['title'] }}"></p>
-    <p>내용: <textarea name="content">{{ post['content'] }}</textarea></p>
+    <p>내용: <textarea name="content">{{ post['content']|safe }}</textarea></p>
     
     <p>이미지 수정: <input type="file" name="file"></p>
 

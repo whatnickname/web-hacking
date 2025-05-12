@@ -1,39 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Home{% endblock %}</title>
-    
 </head>
+
 <body>
     <nav>
-        <button>
-            <div>
-                <div>
-                    {% if user.is_authenticated %}
-                    <p><h2>{{current_user.nickname}}</h2>님 반갑습니다</p>
-                    <div><a id="home" href="/">home</a></div>
-                    <div><a id="logout" href="/logout">Logout</a></div>
-                    {% else %}
-                    <a id="login" href="/login">Login</a>
-                    <a id="signup" href="/signup">Signup</a>
-                    {% endif %}
-                </div>
-            </div>
-        </button>
+        <div>
+            {% if user.is_authenticated %}
+            <h2>{{ current_user.nickname|safe }}</h2>님 반갑습니다
+            <div><a href="/">Home</a></div>
+            <div><a href="/logout">Logout</a></div>
+            {% else %}
+            <a href="/login">Login</a>
+            <a href="/signup">Signup</a>
+            {% endif %}
+        </div>
     </nav>
 
-    {% with messages=get_flashed_messages(with_categories=true) %}  <!-- 오타 수정 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        {% for category, message in messages %}
-        <div class="fade show alert {% if category == 'error' %}alert-danger{% else %}alert-info{% endif %}" role="alert">
-            {{ message }}
-            <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endfor %}
+    {% for category, message in messages %}
+    <div>
+        {{ message|safe }}
+    </div>
+    {% endfor %}
     {% endif %}
     {% endwith %}
 
@@ -42,4 +36,5 @@
         {% endblock %}
     </div>
 </body>
+
 </html>

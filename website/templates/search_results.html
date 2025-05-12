@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>검색 결과</title>
+</head>
+
+<body>
+    <h1>"{{ query|safe }}" 검색 결과</h1>
+
+    {% if length > 0 %}
+    <ul>
+        {% for post in board_list %}
+        <li><a href="{{ url_for('views.board_info', index=post.id) }}">{{ post.nickname|safe }} : {{ post.title|safe }}</a></li>
+        {% endfor %}
+
+    </ul>
+    {% else %}
+    <p>검색 결과가 없습니다.</p>
+    {% endif %}
+
+    <a href="{{ url_for('views.main') }}">🔙 메인으로 돌아가기</a>
+</body>
+
+</html>

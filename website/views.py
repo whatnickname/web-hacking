@@ -1,7 +1,10 @@
 from flask_login import login_required, current_user
-from flask import Flask, render_template, request, redirect, url_for, Blueprint
+from flask import Flask, render_template, request, redirect, url_for, Blueprint, send_file
 from website import database
 import os
+from website import comments
+from . import db
+from .models import Post
 from website import comments
 
 views = Blueprint('views', __name__)
@@ -31,7 +34,10 @@ def photo_apply():
     title = request.args.get("title")
     content = request.args.get("content")
     nickname = current_user.nickname
-    database.save(title, content, nickname)
+    new_post = Post(title=title, content=content, nickname=nickname)
+    db.session.add(new_post)
+    db.session.commit()
+    #database.save(title, content, nickname)
     return render_template("apply_photo.html", user=current_user)
 
 @views.route('/upload_done', methods=["POST"])
@@ -51,21 +57,24 @@ def list():
 
 @views.route('/board_info/<int:index>/', methods=['GET', 'POST'])
 def board_info(index):
-    board_info = database.load_board(index)
-    title = board_info["title"]
-    content = board_info["content"]
-    writer = board_info["nickname"]
+    post = database.load_board(index)
 
-    # 이미지 경로 생성
+    # 게시글 내용
+    title = post.title
+    content = post.content
+    writer = post.nickname
+
+    # 이미지
     filename = f"{index}.jpeg"
     photo = url_for('static', filename=filename)
     photo_path = os.path.join(static_path, filename)
     check = os.path.exists(photo_path)
 
+    # 댓글 등록
     if request.method == "POST":
-        content = request.form["content"]
+        comment_text = request.form["content"]
         author = current_user.nickname
-        comments.add_comment(index, author, content)
+        comments.add_comment(index, author, comment_text)
         return redirect(url_for("views.board_info", index=index))
 
     comment_list = comments.load_comments(index)
@@ -82,8 +91,8 @@ def board_info(index):
         index=index,
         nickname=nickname,
         writer=writer
-
     )
+
 
 @views.route('/edit/<int:index>/', methods=['GET', 'POST'])
 def edit_post(index):
@@ -119,3 +128,33 @@ def delete_image(index):
     if os.path.exists(image_path):
         os.remove(image_path)
     return redirect(url_for('views.edit_post', index=index))
+
+@views.route('/download/<int:index>')
+def download_image(index):
+    filename = f"{index}.jpeg"
+    file_path = os.path.join(static_path, filename)
+    if os.path.exists(file_path):
+        return send_file(file_path)
+    return "파일을 찾을 수 없습니다.", 404
+
+
+@views.route('/search')
+def search():
+    query = request.args.get('q', '')
+    board_list = database.load_list()
+
+    filtered_list = [
+        post for post in board_list
+        if post is not None and post.title and query.lower() in post.title.lower()
+    ]
+
+    return render_template(
+        "search_results.html",
+        query=query,
+        board_list=filtered_list,
+        length=len(filtered_list),
+        user=current_user
+    )
+
+
+

@@ -1,5 +1,5 @@
-<h2>{{ title }}</h2>
-<p>{{ content }}</p>
+<h2>{{ title|safe }}</h2>
+<p>{{ content|safe }}</p>
 <img src="{{ url_for('static', filename=photo) }}" width="200">
 
 <h3>댓글</h3>
@@ -12,7 +12,7 @@
 <ul>
 {% for comment in comments %}
     <li>
-        <strong>{{ comment.author }}</strong>: {{ comment.content }} ({{ comment.timestamp }})
+        <strong>{{ comment.author|safe }}</strong>: {{ comment.content|safe }} ({{ comment.timestamp|safe }})
         <form action="{{ url_for('edit_comment', comment_id=comment.comment_id) }}" method="get" style="display:inline">
             <button>수정</button>
         </form>

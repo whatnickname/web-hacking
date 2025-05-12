@@ -8,12 +8,13 @@
 <body>
     {% if length != 0 %}
         {% for board in board_list %}
-            <a href="{{ url_for('views.board_info', index=loop.index0) }}">
-                <h2>{{ board[2] }} : {{ board[0] }}</h2>
+            <a href="{{ url_for('views.board_info', index=board.id) }}">
+                <h2>{{ board.nickname|safe }} : {{ board.title|safe }}</h2>
             </a>
         {% endfor %}
     {% else %}
         <h2>게시물을 등록해주세요</h2>
+        <a href="{{ url_for('views.main') }}">🏠 홈으로</a>
     {% endif %}
 </body>
 </html>
