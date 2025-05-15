@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 import os
-import psycopg2
 
 db = SQLAlchemy()
 DB_NAME = 'database.db'
@@ -16,7 +15,7 @@ def create_app():
     app = Flask(__name__, static_folder=static_dir)
     
     app.config['SECRET_KEY'] = 'qwrtqet qwr'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://sounds_5iho_user:Q74BalcS5PpgEHbSecrDiucqbtyn9TqL@dpg-d0fg21a4d50c73erp500-a.virginia-postgres.render.com/sounds_5iho'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
