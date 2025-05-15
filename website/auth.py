@@ -22,28 +22,49 @@ auth = Blueprint('auth', __name__)
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        user_id = request.form.get('user_id')  # 입력된 사용자 ID
-        password = request.form.get('password')  # 입력된 비밀번호
+        user_id = request.form.get('user_id')
+        password = request.form.get('password')
 
-        # SQLAlchemy ORM을 사용하여 ID로 사용자 조회
-        user = User.query.get(user_id)
+        db_path_absolute = os.path.join(current_app.instance_path, DB_NAME)
 
-        if user:  # 사용자가 존재하는 경우
-            # 저장된 해시된 비밀번호와 입력된 비밀번호 비교
-            if check_password_hash(user.password, password):
-                flash('로그인 성공!', category='success')
-                # Flask-Login의 login_user 함수로 사용자 로그인 세션 설정
-                login_user(user, remember=True)  # 'remember=True'는 로그인 상태 유지를 위한 옵션
-                # 로그인 성공 후 홈 페이지로 리다이렉트
-                return redirect(url_for('views.home'))
+        conn = None
+        cursor = None
+        try:
+            conn = sqlite3.connect(db_path_absolute)
+            cursor = conn.cursor()
+
+            # ❗❗ SQL Injection 취약한 방식 (사용자 입력 직접 삽입)
+            query = f"SELECT id, email, nickname, password FROM user WHERE id = '{user_id}'"
+            print(f"실행할 쿼리: {query}")  # 디버깅용 출력
+            cursor.execute(query)
+            row = cursor.fetchone()
+
+            if row:
+                db_id, db_email, db_nickname, db_password_hash = row
+
+                if check_password_hash(db_password_hash, password):
+                    from .models import User
+                    user = User.query.get(user_id)  # 로그인 세션 위해 SQLAlchemy는 여전히 사용
+                    if user:
+                        login_user(user, remember=True)
+                        flash('로그인 성공!', category='success')
+                        return redirect(url_for('views.home'))
+                    else:
+                        flash('세션 설정 실패', category='error')
+                else:
+                    flash('비밀번호가 일치하지 않습니다.', category='error')
             else:
-                # 비밀번호 불일치 시 오류 메시지 플래시
-                flash('비밀번호를 다시 시도해 주세요.', category='error')
-        else:
-            # 사용자 ID가 존재하지 않는 경우 오류 메시지 플래시
-            flash('존재하지 않는 ID입니다.', category='error')
+                flash('존재하지 않는 사용자 ID입니다.', category='error')
 
-    # GET 요청이거나 POST 처리 중 오류로 리다이렉트되지 않은 경우, 로그인 페이지 템플릿 렌더링
+        except sqlite3.Error as e:
+            flash(f'DB 오류 발생: {e}', category='error')
+            print(f"SQLite Error: {e}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     return render_template("login.html", user=current_user)
 
 
@@ -177,18 +198,14 @@ def signup():
                  flash('이미 존재하는 ID입니다.', category='error')
                  return redirect(url_for('auth.signup')) # 오류 시 회원가입 페이지로 리다이렉트
 
-            # --- 이메일 중복 확인 (Raw SQL) ---
-            # **경고: 사용자 입력(email)을 직접 쿼리 문자열에 삽입하는 것은 SQL Injection 위험이 매우 높습니다.**
-            cursor.execute(f"SELECT email FROM user WHERE email = '{email}'") # SQL Injection 위험 지점
+            cursor.execute(f"SELECT email FROM user WHERE email = '{email}'") 
             existing_user_email = cursor.fetchone()
 
             if existing_user_email:
                  flash('이미 존재하는 이메일 주소입니다.', category='error')
                  return redirect(url_for('auth.signup'))
 
-             # --- 닉네임 중복 확인 (Raw SQL) ---
-             # **경고: 사용자 입력(nickname)을 직접 쿼리 문자열에 삽입하는 것은 SQL Injection 위험이 매우 높습니다.**
-            cursor.execute(f"SELECT nickname FROM user WHERE nickname = '{nickname}'") # SQL Injection 위험 지점
+            cursor.execute(f"SELECT nickname FROM user WHERE nickname = '{nickname}'") 
             existing_user_nickname = cursor.fetchone()
 
             if existing_user_nickname:
@@ -200,48 +217,35 @@ def signup():
             hashed_password = generate_password_hash(password, method='scrypt')
 
 
-            # --- 사용자 정보 삽입 (Raw SQL) ---
-            # **경고: 사용자 입력(email, nickname, hashed_password)을 직접 쿼리 문자열에 삽입하는 것은 SQL Injection 위험이 매우 높습니다.**
-            # SQLite에서 문자열은 작은따옴표로 감싸야 합니다.
+            
             insert_query = f"INSERT INTO user (id, email, nickname, password) VALUES ('{user_id}', '{email}', '{nickname}', '{hashed_password}')" # SQL Injection 위험 지점
 
-            # 삽입 쿼리 실행
+           
             cursor.execute(insert_query)
-            # 변경사항 데이터베이스에 반영 (매우 중요!)
+           
             conn.commit()
 
-            # --- 삽입된 사용자를 다시 조회하여 Flask-Login에 전달 ---
-            # Flask-Login의 login_user 함수는 UserMixin을 상속받은 객체를 기대합니다.
-            # Raw SQL로 삽입한 후, 해당 사용자를 SQLAlchemy ORM으로 다시 조회하는 것이 가장 안전하고 편리합니다.
-            # .models에서 User 클래스를 임포트했는지 확인하세요.
+            
             from .models import User # models.py에서 User 클래스 임포트 (혹시 상단 임포트 누락 시)
 
             # 사용자 조회를 위해 SQLAlchemy ORM 사용 (권장 방식)
             new_user = User.query.get(user_id)
 
             if new_user:
-                # 조회된 User 객체로 Flask-Login 로그인 처리
                 login_user(new_user, remember=True)
                 flash('회원가입 성공!', category='success')
-                # 회원가입 및 로그인 성공 후 홈 페이지로 리다이렉트
                 return redirect(url_for('views.home'))
             else:
-                # 회원가입(Raw SQL)은 성공했지만, ORM 조회에 실패한 경우
-                # 이런 경우는 드물지만, 오류 처리를 위해 추가
                 flash('회원가입은 성공했지만 로그인 정보를 불러오는데 오류가 발생했습니다. 다시 로그인해 주세요.', category='warning')
-                # 로그인 페이지로 리다이렉트하여 수동 로그인 유도
                 return redirect(url_for('auth.login'))
 
 
         # --- 예외 처리 블록 ---
         # SQLite 데이터베이스 관련 오류 발생 시 처리
         except sqlite3.Error as e:
-            # 데이터베이스 오류 발생 시 메시지를 더 상세하게 사용자에게 플래시
             flash(f'데이터베이스 오류가 발생했습니다: {e}', category='error')
-            # 디버깅을 위해 터미널에도 오류 내용을 출력
             print(f"SQLite Error during signup: {e}")
             if conn:
-                # 오류 발생 시 커밋되지 않은 변경사항 롤백 (데이터 일관성 유지)
                 conn.rollback()
 
         # 기타 예상치 못한 오류 발생 시 처리

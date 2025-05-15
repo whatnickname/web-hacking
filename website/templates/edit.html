@@ -16,12 +16,12 @@
   </form>
 
   <br>
-  <a href="{{ url_for('views.board_info', index=index) }}">🔙 돌아가기</a>
+  <a href="{{ url_for('views.board_info', filename=index ~ '.jpeg') }}">🔙 돌아가기</a>
 
   {% if check %}
     <p>현재 이미지:</p>
-    <img src="{{ url_for('static', filename=index|string + '.jpeg') }}" width="300"><br>
-    <a href="{{ url_for('views.delete_image', index=index) }}">🗑 이미지 삭제</a><br>
+    <img src="{{ url_for('views.download_image', filename=index ~ '.jpeg') }}" width="300"><br>
+    <a href="{{ url_for('views.delete_image', filename=index ~ '.jpeg') }}">🗑 이미지 삭제</a><br>
   {% else %}
     <p>등록된 이미지가 없습니다.</p>
   {% endif %}

@@ -16,9 +16,10 @@
 
     {% if check %}
     <div>
-        <iframe src="{{ url_for('views.download_image', index=index) }}" width="450" height="450"
-            frameborder="0"></iframe>
+        <iframe src="data:image/jpeg;base64,{{ photo_data }}" 
+        width="450" height="450" frameborder="0"></iframe>
     </div>
+    <a href="{{ url_for('views.download_by_filename', filename=index ~ '.jpeg') }}">이미지 다운로드</a>
     {% endif %}
 
 
@@ -37,8 +38,8 @@
     <a href="{{ url_for('views.main') }}">🏠 홈으로</a>
 
     {% if nickname==writer %}
-    <a href="{{ url_for('views.edit_post', index=index) }}">✏️ 수정</a>
-    <a href="{{ url_for('views.delete_post', index=index) }}">🗑 삭제</a>
+    <a href="{{ url_for('views.edit_post', filename=index ~ '.jpeg') }}">✏️ 수정</a>
+    <a href="{{ url_for('views.delete_post', filename=index ~ '.jpeg') }}">🗑 삭제</a>
     {%endif%}
 
 
