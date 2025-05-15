@@ -12,7 +12,7 @@
     {% if length > 0 %}
     <ul>
         {% for post in board_list %}
-        <li><a href="{{ url_for('views.board_info', index=post.id) }}">{{ post.nickname|safe }} : {{ post.title|safe }}</a></li>
+        <li><a href="{{ url_for('views.board_info', filename=post.id ~ '.jpeg') }}">{{ post.nickname|safe }} : {{ post.title|safe }}</a></li>
         {% endfor %}
 
     </ul>
