@@ -16,7 +16,7 @@
 
     {% if check %}
     <div>
-        <iframe src="data:image/jpeg;base64,{{ photo_data }}" 
+        <iframe src="{{ url_for('views.download_image', filename=index ~ '.jpeg') }}" 
         width="450" height="450" frameborder="0"></iframe>
     </div>
     <a href="{{ url_for('views.download_by_filename', filename=index ~ '.jpeg') }}">이미지 다운로드</a>

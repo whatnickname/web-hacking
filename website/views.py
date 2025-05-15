@@ -42,16 +42,10 @@ def photo_apply():
 @views.route('/upload_done', methods=["POST"])
 def upload_done():
     uploaded_file = request.files["file"]
-    title = request.form.get("title")
-    content = request.form.get("content")
-    nickname = current_user.nickname
-
-    if uploaded_file and uploaded_file.filename != '':
-        image_blob = uploaded_file.read()
-        new_post = Post(title=title, content=content, nickname=nickname, image=image_blob)
-        db.session.add(new_post)
-        db.session.commit()
-
+    if uploaded_file.filename != '':
+        os.makedirs(static_path, exist_ok=True)
+        save_path = os.path.join(static_path, f"{database.now_index()}.jpeg")
+        uploaded_file.save(save_path)
     return redirect(url_for("views.main"))
 
 
@@ -63,11 +57,6 @@ def list():
 
 @views.route('/board_info', methods=['GET', 'POST'])
 def board_info():
-    photo_data = None
-    if post.image:
-        import base64
-        photo_data = base64.b64encode(post.image).decode('utf-8')
-
     filename = request.args.get("filename")
 
     # 1. 유효성 검사
@@ -115,8 +104,7 @@ def board_info():
         filename=filename,
         nickname=current_user.nickname,
         writer=writer,
-        index=index,
-        photo_data=photo_data
+        index=index
     )
 
 
